@@ -1,139 +1,86 @@
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <title>Comparação de Modelos de Crédito - p5.js</title>
+    <title>Projeto: Comparação de Crédito</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
     <style>
         body {
-            background-color: #f0f2f5;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            font-family: sans-serif;
+            margin: 0; padding: 0;
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; background-color: #f0f2f5;
+            font-family: 'Segoe UI', sans-serif;
         }
-        .card {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-            width: 400px;
+        .main-card {
+            width: 440px; background-color: #e9ecef;
+            border-radius: 40px; padding: 40px 30px;
+            box-shadow: 0 20px 45px rgba(0,0,0,0.15);
             text-align: center;
         }
-        h2 { color: #1a365d; font-size: 18px; margin-bottom: 20px; }
-        .row { display: flex; gap: 10px; margin-bottom: 15px; text-align: left; }
-        .col { flex: 1; }
-        label { display: block; font-size: 12px; color: #666; margin-bottom: 5px; }
-        input, select {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            box-sizing: border-box;
+        h1 { color: #1d2d44; font-size: 22px; margin-bottom: 30px; line-height: 1.3; }
+        .inputs { display: flex; gap: 15px; margin-bottom: 20px; text-align: left; }
+        .group { flex: 1; }
+        label { display: block; font-size: 13px; color: #495057; margin-bottom: 8px; }
+        input { 
+            width: 100%; padding: 12px; border: none; 
+            border-radius: 12px; font-size: 16px; box-sizing: border-box;
         }
-        button {
-            width: 60%;
-            padding: 10px;
-            background: linear-gradient(to bottom, #2b4c7e, #1a365d);
-            color: white;
-            border: none;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: bold;
+        .actions { display: flex; gap: 15px; margin-bottom: 25px; }
+        .btn { 
+            flex: 1; padding: 15px; background-color: #415a77; 
+            color: white; border: none; border-radius: 25px; 
+            font-weight: 600; cursor: pointer; font-size: 16px;
         }
-        #canvas-container {
-            margin-top: 20px;
-            background: #e9ecef;
-            border-radius: 10px;
-            padding: 15px;
+        .select-box { 
+            flex: 1; position: relative; background: white; 
+            border-radius: 25px; display: flex; align-items: center;
         }
-        .diff-label { color: #b7791f; font-weight: bold; margin-bottom: 10px; }
+        select { 
+            width: 100%; padding: 12px 20px; border: none; 
+            background: transparent; appearance: none; font-size: 16px;
+        }
+        .select-box::after { content: '⌄'; position: absolute; right: 20px; font-size: 18px; color: #666; }
+        .chart-area { background-color: #dee2e6; border-radius: 25px; padding: 20px; }
+        .diff { font-size: 18px; color: #495057; margin-bottom: 15px; }
+        .diff span { color: #c0a060; font-weight: 600; }
+        #p5-canvas { background: white; border-radius: 15px; display: flex; justify-content: center; }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <h2>Comparação de limite de crédito</h2>
+<div class="main-card">
+    <h1 id="title">Comparação de limite de crédito concedido</h1>
     
-    <div class="row">
-        <div class="col">
-            <label>Modelo Não-Linear</label>
-            <input type="number" id="inpNL" value="50">
+    <div class="inputs">
+        <div class="group">
+            <label>Modelo Não-Linear:</label>
+            <input type="number" id="nlVal" value="50">
         </div>
-        <div class="col">
-            <label>Modelo Linear</label>
-            <input type="number" id="inpL" value="25">
+        <div class="group">
+            <label>Modelo Linear:</label>
+            <input type="number" id="lVal" value="25">
         </div>
     </div>
 
-    <div class="row" style="align-items: flex-end;">
-        <button onclick="updateData()">Comparar</button>
-        <div class="col">
-            <select id="mes">
-                <option>Janeiro</option>
-                <option>Fevereiro</option>
-                <option>Março</option>
-                <option selected>Abril</option>
+    <div class="actions">
+        <button class="btn" id="btnComparar">Comparar</button>
+        <div class="select-box">
+            <select id="selMonth" onchange="document.getElementById('title').innerText = 'Comparação de limite de crédito concedido em ' + this.value;">
+                <option value="Janeiro">Janeiro</option>
+                <option value="Fevereiro">Fevereiro</option>
+                <option value="Março">Março</option>
+                <option value="Abril" selected>Abril</option>
             </select>
         </div>
     </div>
 
-    <div id="canvas-container">
-        <div class="diff-label" id="txtDiff">Diferença: +25 (média)</div>
-        <div id="sketch-holder"></div>
+    <div class="chart-area">
+        <div class="diff">Diferença: <span id="diffText">+25 (média)</span></div>
+        <div id="p5-canvas"></div>
     </div>
 </div>
 
-<script>
-    let valL = 25;
-    let valNL = 50;
-
-    function setup() {
-        let canvas = createCanvas(340, 120);
-        canvas.parent('sketch-holder');
-        noLoop();
-    }
-
-    function draw() {
-        clear();
-        let margin = 20;
-        let maxVal = Math.max(valL, valNL, 60); 
-        let chartWidth = width - 100;
-
-        // Barra Linear (Base - Cinza)
-        fill(180);
-        noStroke();
-        let wL = map(valL, 0, maxVal, 0, chartWidth);
-        rect(margin, 30, wL, 20, 5);
-        fill(100);
-        textSize(12);
-        text("Linear: " + valL, margin + wL + 10, 45);
-
-        // Barra Não-Linear (Destaque - Azul)
-        fill(26, 54, 93);
-        let wNL = map(valNL, 0, maxVal, 0, chartWidth);
-        rect(margin, 70, wNL, 20, 5);
-        fill(26, 54, 93);
-        text("Não-Linear: " + valNL, margin + wNL + 10, 85);
-
-        // Linha de comparação (Diferença)
-        stroke(184, 121, 31);
-        strokeWeight(2);
-        line(margin + wL, 25, margin + wL, 95);
-    }
-
-    function updateData() {
-        valL = float(document.getElementById('inpL').value);
-        valNL = float(document.getElementById('inpNL').value);
-        
-        let diff = valNL - valL;
-        document.getElementById('txtDiff').innerText = "Diferença: " + (diff >= 0 ? "+" : "") + diff + " (média)";
-        
-        redraw();
-    }
-</script>
-
+<script src="sketch.js"></script>
 </body>
 </html>
