@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Comparação de Modelos de Crédito - p5.js</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <style>
+        body {
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: sans-serif;
+        }
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            width: 400px;
+            text-align: center;
+        }
+        h2 { color: #1a365d; font-size: 18px; margin-bottom: 20px; }
+        .row { display: flex; gap: 10px; margin-bottom: 15px; text-align: left; }
+        .col { flex: 1; }
+        label { display: block; font-size: 12px; color: #666; margin-bottom: 5px; }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 60%;
+            padding: 10px;
+            background: linear-gradient(to bottom, #2b4c7e, #1a365d);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        #canvas-container {
+            margin-top: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+        }
+        .diff-label { color: #b7791f; font-weight: bold; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Comparação de limite de crédito</h2>
+    
+    <div class="row">
+        <div class="col">
+            <label>Modelo Não-Linear</label>
+            <input type="number" id="inpNL" value="50">
+        </div>
+        <div class="col">
+            <label>Modelo Linear</label>
+            <input type="number" id="inpL" value="25">
+        </div>
+    </div>
+
+    <div class="row" style="align-items: flex-end;">
+        <button onclick="updateData()">Comparar</button>
+        <div class="col">
+            <select id="mes">
+                <option>Janeiro</option>
+                <option>Fevereiro</option>
+                <option>Março</option>
+                <option selected>Abril</option>
+            </select>
+        </div>
+    </div>
+
+    <div id="canvas-container">
+        <div class="diff-label" id="txtDiff">Diferença: +25 (média)</div>
+        <div id="sketch-holder"></div>
+    </div>
+</div>
+
+<script>
+    let valL = 25;
+    let valNL = 50;
+
+    function setup() {
+        let canvas = createCanvas(340, 120);
+        canvas.parent('sketch-holder');
+        noLoop();
+    }
+
+    function draw() {
+        clear();
+        let margin = 20;
+        let maxVal = Math.max(valL, valNL, 60); 
+        let chartWidth = width - 100;
+
+        // Barra Linear (Base - Cinza)
+        fill(180);
+        noStroke();
+        let wL = map(valL, 0, maxVal, 0, chartWidth);
+        rect(margin, 30, wL, 20, 5);
+        fill(100);
+        textSize(12);
+        text("Linear: " + valL, margin + wL + 10, 45);
+
+        // Barra Não-Linear (Destaque - Azul)
+        fill(26, 54, 93);
+        let wNL = map(valNL, 0, maxVal, 0, chartWidth);
+        rect(margin, 70, wNL, 20, 5);
+        fill(26, 54, 93);
+        text("Não-Linear: " + valNL, margin + wNL + 10, 85);
+
+        // Linha de comparação (Diferença)
+        stroke(184, 121, 31);
+        strokeWeight(2);
+        line(margin + wL, 25, margin + wL, 95);
+    }
+
+    function updateData() {
+        valL = float(document.getElementById('inpL').value);
+        valNL = float(document.getElementById('inpNL').value);
+        
+        let diff = valNL - valL;
+        document.getElementById('txtDiff').innerText = "Diferença: " + (diff >= 0 ? "+" : "") + diff + " (média)";
+        
+        redraw();
+    }
+</script>
+
+</body>
+</html>
