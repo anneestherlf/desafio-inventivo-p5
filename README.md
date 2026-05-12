@@ -39,6 +39,8 @@ De início pensei em utilizar círculos, mas acabei mudando para um gráfico de 
 
 <img align="center" src="/assets/figma-comparacao.png">
 
+Acesse o Figma pelo link: <https://www.figma.com/design/djmm1mqDUBA5L3j9e28dbf/P5.js---compara%C3%A7%C3%A3o?node-id=0-1&t=IhCeKEX9XKnwloSC-1>
+
 ## 3. Resultado final (utilizando p5.js)
 
 Acesse aqui: <https://anneestherlf.github.io/desafio-inventivo-p5/>
