@@ -32,6 +32,8 @@ Uma interface interativa em **p5.js** que permite ao analista de crédito:
 
 <img align="center" src="/assets/fisico-comparacao.jpg">
 
+De início pensei em utilizar círculos, mas acabei mudando para um gráfico de barras após um feedback direto da professora Bruna (UX Design). O motivoi foi que gráficos de barras representam a diferença entre os valores de forma perceptível ao olho humano (diferente dos círculos). Fonte: <https://scc.ms.unimelb.edu.au/resources/data-visualisation-and-exploration/no_pie-charts>
+
 
 ### 2.2. Rascunho no Figma
 
